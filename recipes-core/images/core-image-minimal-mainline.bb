@@ -33,4 +33,6 @@ IMAGE_INSTALL:append = " \
     wget \
     gcc \
     psplash-raspberrypi \
+    kernel-base \
+    hello-world \
 "

@@ -1,0 +1,60 @@
+#!/bin/sh
+
+MODULE_NAME="hello_world"
+MODULE_FILE="/lib/modules/$(uname -r)/updates/hello_world.ko"
+
+case "$1" in
+    start)
+        echo "Loading ${MODULE_NAME} kernel module"
+
+        if grep -qw "${MODULE_NAME}" /proc/modules; then
+            echo "${MODULE_NAME} is already loaded"
+            exit 0
+        fi
+
+        # Try the normal module-loading mechanism first.
+        if modprobe "${MODULE_NAME}" 2>/dev/null; then
+            exit 0
+        fi
+
+        # Fall back to the exact module path if depmod metadata is incomplete.
+        if [ -f "${MODULE_FILE}" ]; then
+            insmod "${MODULE_FILE}"
+            exit $?
+        fi
+
+        echo "ERROR: ${MODULE_FILE} was not found"
+        exit 1
+        ;;
+
+    stop)
+        echo "Unloading ${MODULE_NAME} kernel module"
+
+        if grep -qw "${MODULE_NAME}" /proc/modules; then
+            modprobe -r "${MODULE_NAME}" 2>/dev/null || \
+                rmmod "${MODULE_NAME}" 2>/dev/null || true
+        fi
+        ;;
+
+    restart)
+        "$0" stop
+        "$0" start
+        ;;
+
+    status)
+        if grep -qw "${MODULE_NAME}" /proc/modules; then
+            echo "${MODULE_NAME} is loaded"
+            exit 0
+        fi
+
+        echo "${MODULE_NAME} is not loaded"
+        exit 3
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
+
+exit 0
