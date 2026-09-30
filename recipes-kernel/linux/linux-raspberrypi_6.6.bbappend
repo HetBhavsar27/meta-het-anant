@@ -38,4 +38,5 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI:append = " \
 file://rpi5-prune.cfg \
 file://rpi5-ethernet.cfg \
+file://rpi5-display.cfg \
 "
