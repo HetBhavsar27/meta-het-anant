@@ -32,3 +32,9 @@ KERNEL_LOCALVERSION = "-yocto-rpi5"
 # The upstream kernel.org source does not contain the Raspberry Pi downstream
 # bcm2712_defconfig, so use the standard ARM64 defconfig.
 KBUILD_DEFCONFIG:raspberrypi5 = "defconfig"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+ 
+SRC_URI:append = " \
+file://rpi5-prune.cfg \
+"
