@@ -1,16 +1,34 @@
+# Use the local upstream Linux source tree directly.
 inherit externalsrc
 
-EXTERNALSRC = "/home/einfochips/Project/yocto_Learning/linux-7.2.7"
+# THISDIR points to:
+# meta-het-anant/recipes-kernel/linux
+#
+# ../../../linux-7.2.7 resolves to:
+# yocto_Learning/linux-7.2.7
+EXTERNALSRC = "${THISDIR}/../../../linux-7.2.7"
+
+# Keep generated kernel build files inside Yocto's work directory.
 EXTERNALSRC_BUILD = "${WORKDIR}/external-build"
 
 S = "${EXTERNALSRC}"
 B = "${EXTERNALSRC_BUILD}"
+
+
+# ---------------------------------------------------------------------------
+# Kernel version
+# ---------------------------------------------------------------------------
 
 LINUX_VERSION = "7.2.7"
 PV = "${LINUX_VERSION}"
 
 KERNEL_LOCALVERSION = "-yocto-rpi5"
 
-KBUILD_DEFCONFIG:raspberrypi5 = "defconfig"
 
-KERNEL_DEVICETREE = "broadcom/bcm2712-rpi-5-b.dtb"
+# ---------------------------------------------------------------------------
+# Kernel configuration
+# ---------------------------------------------------------------------------
+
+# The upstream kernel.org source does not contain the Raspberry Pi downstream
+# bcm2712_defconfig, so use the standard ARM64 defconfig.
+KBUILD_DEFCONFIG:raspberrypi5 = "defconfig"
