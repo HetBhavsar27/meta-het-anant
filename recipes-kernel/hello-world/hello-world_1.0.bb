@@ -15,15 +15,24 @@ SRC_URI = " \
 
 S = "${WORKDIR}"
 
-# Keep hello_world.ko in the main hello-world package.
+# Keep the module in the stable hello-world package.
 KERNEL_SPLIT_MODULES = "0"
 
-# Register /etc/init.d/hello-world with SysVinit.
+# Register the SysVinit startup service.
 INITSCRIPT_PACKAGES = "${PN}"
 INITSCRIPT_NAME:${PN} = "hello-world"
 INITSCRIPT_PARAMS:${PN} = "start 99 2 3 4 5 . stop 10 0 1 6 ."
 
-do_install:append() {
+# Replace the inherited module installation.
+# Install creates a fresh independent copy of hello_world.ko.
+do_install() {
+    install -d \
+        ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/updates
+
+    install -m 0644 \
+        ${S}/hello_world.ko \
+        ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/updates/hello_world.ko
+
     install -d ${D}${sysconfdir}/init.d
 
     install -m 0755 \
