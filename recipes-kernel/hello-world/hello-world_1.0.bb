@@ -15,16 +15,22 @@ SRC_URI = " \
 
 S = "${WORKDIR}"
 
-# Keep the module in the stable hello-world package.
+# Keep the kernel module in the stable hello-world package.
 KERNEL_SPLIT_MODULES = "0"
 
-# Register the SysVinit startup service.
+# This small development module does not need a separate debug copy.
+# Disabling strip/debug splitting prevents hard-link and inode reuse around
+# hello_world.ko during repeated kernel and image rebuilds.
+INHIBIT_PACKAGE_STRIP = "1"
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+
 INITSCRIPT_PACKAGES = "${PN}"
 INITSCRIPT_NAME:${PN} = "hello-world"
 INITSCRIPT_PARAMS:${PN} = "start 99 2 3 4 5 . stop 10 0 1 6 ."
 
-# Replace the inherited module installation.
-# Install creates a fresh independent copy of hello_world.ko.
+# Always begin installation with a completely empty destination directory.
+do_install[cleandirs] = "${D}"
+
 do_install() {
     install -d \
         ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/updates
