@@ -3,6 +3,8 @@ DESCRIPTION = "Kernel module that prints a Hello World message during system sta
 HOMEPAGE = "https://github.com/HetBhavsar27"
 LICENSE = "GPL-2.0-only"
 
+PR = "r1"
+
 LIC_FILES_CHKSUM = "file://hello_world.c;beginline=1;endline=1;md5=fcab174c20ea2e2bc0be64b493708266"
 
 inherit module update-rc.d
@@ -15,22 +17,23 @@ SRC_URI = " \
 
 S = "${WORKDIR}"
 
-# Keep the kernel module in the stable hello-world package.
+# Keep hello_world.ko in the stable main hello-world package.
 KERNEL_SPLIT_MODULES = "0"
 
-# This small development module does not need a separate debug copy.
-# Disabling strip/debug splitting prevents hard-link and inode reuse around
-# hello_world.ko during repeated kernel and image rebuilds.
+# This is a small development module. Avoid creating a separate debug copy
+# and avoid stripping/hard-link processing around hello_world.ko.
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
+# Register the SysVinit service.
 INITSCRIPT_PACKAGES = "${PN}"
 INITSCRIPT_NAME:${PN} = "hello-world"
 INITSCRIPT_PARAMS:${PN} = "start 99 2 3 4 5 . stop 10 0 1 6 ."
 
-# Always begin installation with a completely empty destination directory.
+# Ensure every installation starts with an empty destination directory.
 do_install[cleandirs] = "${D}"
 
+# Install the module explicitly as an independent file.
 do_install() {
     install -d \
         ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/updates
