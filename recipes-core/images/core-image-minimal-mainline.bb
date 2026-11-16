@@ -35,4 +35,5 @@ IMAGE_INSTALL:append = " \
     psplash-raspberrypi \
     kernel-base \
     hello-world \
+    het-char \
 "
